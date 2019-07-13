@@ -1,0 +1,106 @@
+<head>
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <link rel='icon' href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/twitter/214/shallow-pan-of-food_1f958.png">
+    <title>What's for Dinner</title>
+</head>
+<body>
+    <div id='root'></div>
+</body>
+
+<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+<script type="text/babel">
+const root = document.getElementById('root');
+const buttonClass = `center bg-blue-600 text-white rounded p-2 m-2`
+const navClass = `bg-blue-600 text-center text-white text-4xl underline p-2 cursor-pointer`
+const footerClass = `absolute bottom-0 w-full bg-blue-600 text-center text-white text-xl`
+const link = `underline cursor-pointer hover:font-bold`
+const foodClass = `text-6xl p-2 m-2`
+class NavBar extends React.Component {
+    reload() {location.reload()}
+    render() {
+        return (
+            <nav className={navClass}>
+                <a onClick={this.reload}>What's for Dinner?</a>
+            </nav>
+        )
+    }
+}
+
+function Footer() {
+    return (
+        <footer className={footerClass}>Made with love by <a className={link} href="https://twitter.com/pickleat">@pickleat</a></footer>
+    )
+}
+
+class FoodFinder extends React.Component {
+    static OptionsCycle = ['Sushi', 'Hibachi', 'Vegetarian', 'Vegan', ,'Greek', 'Burgers', 'Mexican', 'Indian', 'Thai', 'Fast Food', 'Fried Chicken', 'Dumplings', 'Italian', 'Mongolian', 'German', 'Bar Food', 'Pizza']
+    state = {count: 0, optionsState: 0, goal: '', isRunning: false, showSearch: false, foodChoice: ''}
+    rando = () => {
+        this.setState({optionsState: ((this.state.optionsState += 1) % FoodFinder.OptionsCycle.length)})
+    }
+    searchButton = () => {
+        window.open(`https://google.com/search?q=${this.state.foodChoice} restaurants near me`)
+    }
+    componentDidMount() {
+        
+    }
+    componentWillUnmount() {
+        clearInterval(this.interval)
+    }
+    handleStartClick = () => {
+        console.log('start')
+        if(this.state.isRunning){
+            return
+        }
+        this.interval = setInterval(() => this.rando(), 50);
+        this.setState({isRunning: true})
+
+    }
+    handleStopClick = () => {
+        console.log('stop')
+        const foodChoice = document.getElementById('foodType').innerText
+        console.log(foodChoice);
+        this.setState({isRunning: false, showSearch: true, foodChoice: foodChoice})
+        this.componentWillUnmount()
+    }
+    render() {
+        const {optionsState, isRunning, count, showSearch, foodChoice} = this.state;
+        let search;
+        if(showSearch) {
+            search = <button className={buttonClass} onClick={this.searchButton}>Find {foodChoice} in your area</button>
+        }
+
+        return (
+            <div className={`p-2 m-2 center`}>
+                <p>Click 'Start' To start the restaurant generator</p>
+                    <span id='foodType'
+                        className={foodClass} 
+                        >{FoodFinder.OptionsCycle[optionsState]}
+                    </span><br />
+                    <button className={buttonClass} onClick={this.handleStartClick}>Start</button>
+                    <button className={buttonClass} onClick={this.handleStopClick}>Stop</button>
+                    <br />{search}
+            </div>
+        )
+    }
+}
+
+class Name extends React.Component {}
+
+function App(){
+
+    return (
+        <div>
+            <NavBar />
+            <FoodFinder />
+            <Footer />
+        </div>
+    )
+}
+
+ReactDOM.render(
+    <App />, root,
+)
+</script>
